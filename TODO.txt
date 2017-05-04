@@ -1,0 +1,38 @@
+user.model.ts (app) & models/user.js --> oude versie weghalen
+    + forms aanpassen
+    + mongo tabel verwijderen met alle users want schema is niet correct meer 
+        (Eventueel opzoeken of schema kan overschreven worden)
+
+- headers variable in auth.service exporten naar classe (vele verschillende headers) -> zie api_urls of constants (array)
+
+- token jwt aanpassen (nu nog simpelweg: secret)
+- date picker eventueel voor signup
+
+- request file maken (zie kyber) -> authentication service bv
+
+- Traag laden namen
+    -- var debounce = require('lodash.debounce');
+    -- https://www.garysieling.com/blog/lodash-debounce-example
+    
+
+- .gitignore (github plaatsen) -> exclude js-bigchaindb-quickstart (with ! as ignore pattern)
+- refactor to ES6 promise (and ES6 in general)
+    -> es6-promise npm  (niet nodig per se!)
+    -> pagina company.js --> promise gebruiken
+
+
+- Bigchain Functionality met npm (un)link js-bigchaindb-quickstart
+    in /home/michiel/MEAN/seed-project-working-L26/01 Seed/node_modules
+
+- probleem dat namen niet uniek zijn (email wel, maar wijzigt doorheen tijd)
+
+- testtypes navragen (hoe beheren) -> nu hardcoded
+
+- request package gaan gebruiken, zie Kyber: https://github.com/bigchaindb/kyber/blob/master/drivers/javascript/src/connection/postTransaction.js (zeer handig met query params)
+- search voor naam afwerken: https://www.youtube.com/watch?v=GZw3kilqDeg 
+
+---------------------
+UITBREIDING
+---------------------
+Elke user krijgt een unieke token (~Bitcoin wallet) waarmee hij kan aanmelden in combinatie met google authenticator
+om te bewijzen dat Third party apps toch geïntegreerd kunnen worden met Blockchain

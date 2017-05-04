@@ -1,0 +1,49 @@
+2017-04-18T13:26:16.853365495 0.201440s notice: Recursively removing directory /home/michiel/MEAN/chain/chainv2/rethinkdb_data/tmp
+2017-04-18T13:26:16.875033501 0.223108s notice: Initializing directory /home/michiel/MEAN/chain/chainv2/rethinkdb_data
+2017-04-18T13:26:16.875111099 0.223186s info: Creating a default database for your convenience. (This is because you ran 'rethinkdb' without 'create', 'serve', or '--join', and the directory '/home/michiel/MEAN/chain/chainv2/rethinkdb_data' did not already exist or is empty.)
+2017-04-18T13:26:16.875175776 0.223250s notice: Running rethinkdb 2.3.5~0xenial (GCC 5.3.1)...
+2017-04-18T13:26:16.877393430 0.225470s notice: Running on Linux 4.4.0-72-generic x86_64
+2017-04-18T13:26:16.877440785 0.225515s notice: Loading data from directory /home/michiel/MEAN/chain/chainv2/rethinkdb_data
+2017-04-18T13:26:17.176181635 0.524257s info: Automatically using cache size of 4152 MB
+2017-04-18T13:26:17.177231269 0.525306s notice: Listening for intracluster connections on port 29015
+2017-04-18T13:26:17.215643058 0.563718s notice: Listening for client driver connections on port 28015
+2017-04-18T13:26:17.215714021 0.563789s notice: Listening for administrative HTTP connections on port 8080
+2017-04-18T13:26:17.215716885 0.563792s notice: Listening on cluster addresses: 127.0.0.1, 127.0.1.1, ::1
+2017-04-18T13:26:17.215720866 0.563796s notice: Listening on driver addresses: 127.0.0.1, 127.0.1.1, ::1
+2017-04-18T13:26:17.215723171 0.563798s notice: Listening on http addresses: 127.0.0.1, 127.0.1.1, ::1
+2017-04-18T13:26:17.215727152 0.563802s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2017-04-18T13:26:17.215731343 0.563806s notice: Server ready, "michiel_j77" 6af6fffe-a6fd-40d9-bdbd-a47d2a55857d
+2017-04-18T13:26:48.214188253 31.562264s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Starting a new Raft election for term 1.
+2017-04-18T13:26:48.215172560 31.563248s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Added replica on this server.
+2017-04-18T13:26:48.375257952 31.723333s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: This server is Raft leader for term 1. Latest log index is 0.
+2017-04-18T13:26:49.268602910 32.616678s info: Table 03f1155e-daab-4f13-a999-7e36073ae0c8: Starting a new Raft election for term 1.
+2017-04-18T13:26:49.268818402 32.616893s info: Table 03f1155e-daab-4f13-a999-7e36073ae0c8: Added replica on this server.
+2017-04-18T13:26:49.308401344 32.656476s info: Table 03f1155e-daab-4f13-a999-7e36073ae0c8: This server is Raft leader for term 1. Latest log index is 0.
+2017-04-18T13:26:50.541082920 33.889158s info: Table 684deb94-06b9-4dee-9893-e90a8f9b02f0: Starting a new Raft election for term 1.
+2017-04-18T13:26:50.541340310 33.889415s info: Table 684deb94-06b9-4dee-9893-e90a8f9b02f0: Added replica on this server.
+2017-04-18T13:26:50.583465234 33.931540s info: Table 684deb94-06b9-4dee-9893-e90a8f9b02f0: This server is Raft leader for term 1. Latest log index is 0.
+2017-04-18T13:26:51.093759277 34.441834s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Configuration is changing.
+2017-04-18T13:26:51.176844652 34.524919s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Configuration is changing.
+2017-04-18T13:26:51.371217580 34.719292s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Configuration is changing.
+2017-04-18T13:26:51.526386469 34.874461s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Configuration is changing.
+2017-04-18T13:26:51.699266474 35.047341s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Configuration is changing.
+2017-04-18T13:26:55.034857684 38.382932s info: Table 03f1155e-daab-4f13-a999-7e36073ae0c8: Configuration is changing.
+2017-04-18T13:26:55.870515483 39.218590s info: Table 684deb94-06b9-4dee-9893-e90a8f9b02f0: Configuration is changing.
+2017-04-19T11:37:41.812561581 0.288919s notice: Running rethinkdb 2.3.5~0xenial (GCC 5.3.1)...
+2017-04-19T11:37:41.828380110 0.304739s notice: Running on Linux 4.4.0-72-generic x86_64
+2017-04-19T11:37:41.828429904 0.304787s notice: Loading data from directory /home/michiel/MEAN/chain/chainv2/rethinkdb_data
+2017-04-19T11:37:42.028982515 0.505340s info: Automatically using cache size of 4445 MB
+2017-04-19T11:37:42.033825784 0.510183s notice: Listening for intracluster connections on port 29015
+2017-04-19T11:37:42.527253419 1.003611s notice: Listening for client driver connections on port 28015
+2017-04-19T11:37:42.527367534 1.003725s notice: Listening for administrative HTTP connections on port 8080
+2017-04-19T11:37:42.527370118 1.003727s notice: Listening on cluster addresses: 127.0.0.1, 127.0.1.1, ::1
+2017-04-19T11:37:42.527436534 1.003793s notice: Listening on driver addresses: 127.0.0.1, 127.0.1.1, ::1
+2017-04-19T11:37:42.527441353 1.003798s notice: Listening on http addresses: 127.0.0.1, 127.0.1.1, ::1
+2017-04-19T11:37:42.527444496 1.003801s notice: To fully expose RethinkDB on the network, bind to all addresses by running rethinkdb with the `--bind all` command line option.
+2017-04-19T11:37:42.527447219 1.003804s notice: Server ready, "michiel_j77" 6af6fffe-a6fd-40d9-bdbd-a47d2a55857d
+2017-04-19T11:37:43.726002650 2.202360s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: Starting a new Raft election for term 2.
+2017-04-19T11:37:43.768676843 2.245034s info: Table 566f1c3a-13d0-4b40-9972-88d74b62864e: This server is Raft leader for term 2. Latest log index is 8.
+2017-04-19T11:37:43.835843591 2.312201s info: Table 03f1155e-daab-4f13-a999-7e36073ae0c8: Starting a new Raft election for term 2.
+2017-04-19T11:37:43.876784613 2.353142s info: Table 03f1155e-daab-4f13-a999-7e36073ae0c8: This server is Raft leader for term 2. Latest log index is 4.
+2017-04-19T11:37:44.355397013 2.831754s info: Table 684deb94-06b9-4dee-9893-e90a8f9b02f0: Starting a new Raft election for term 2.
+2017-04-19T11:37:44.485103737 2.961460s info: Table 684deb94-06b9-4dee-9893-e90a8f9b02f0: This server is Raft leader for term 2. Latest log index is 4.

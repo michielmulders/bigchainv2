@@ -1,0 +1,47 @@
+<div class="col-md-8 col-md-offset-2">
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <div class="checkbox">
+                <label><input type="checkbox" id="companyCheckbox" name="company" 
+                (click)="switchCompany()">Company</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label *ngIf="!isCompany" for="name">Test Person Name</label>
+            <label *ngIf="isCompany" for="name">Company Name</label>
+            <input
+                    type="text"
+                    id="name"
+                    class="form-control"
+                    formControlName="name">
+        </div>
+        <div *ngIf="!isCompany" class="form-group">
+            <label for="birth">Birth</label>
+            <input
+                    type="text"
+                    id="birth"
+                    placeholder="YYYY-MM-DD"
+                    class="form-control"
+                    formControlName="birth">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    formControlName="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                    type="password"
+                    id="password"
+                    class="form-control"
+                    formControlName="password">
+        </div>
+        <button class="btn btn-primary"
+                type="submit"
+                [disabled]="!myForm.valid">Submit</button>
+    </form>
+</div>

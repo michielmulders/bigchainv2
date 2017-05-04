@@ -1,0 +1,8 @@
+test@gmail.com
+test -> van hash public key pair: HV1SYDYwqKYLarWHi2mW8PevmEcSEZWAiaK2LfAcy2vV
+
+company@gmail.com
+company -> van hash public key pair: FWWV7uHPcG9j94HcidR9Vp2yc2Hy6fFcZycWpMtRBfZL
+
+http://localhost:9984/api/v1/outputs?public_key=HV1SYDYwqKYLarWHi2mW8PevmEcSEZWAiaK2LfAcy2vV
+--> Result: alle transacties die aan dit account hangen
