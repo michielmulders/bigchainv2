@@ -1,0 +1,14 @@
+<div class="col-md-8 col-md-offset-2">
+    <h1>Ondergane testen</h1>
+    <div class="card" *ngFor="let output of outputs.transactions">
+        <h3 class="card-header">{{output.asset.data.testType}}</h3>
+        <div class="card-block">
+            <!--<h4 class="card-title">Special title treatment</h4>-->
+            <p class="card-text">
+                Date: {{output.asset.data.testDate}}
+                <br>
+                <span *ngIf='output.metadata.testRemark != ""'>Remarks: {{output.metadata.testRemark}}</span>
+            </p>
+        </div>
+    </div>
+</div>

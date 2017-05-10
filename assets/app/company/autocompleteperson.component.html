@@ -1,0 +1,21 @@
+<form [formGroup]="autoCompleteForm">
+    <div class="search-block">
+        <label for="name">Test Person Name</label>
+        <input
+                #searchTextBox
+                (keyup)="onKeyup(searchTextBox.value)"
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                formControlName="name"
+                autocomplete="off">
+        <div class="dropdown" [class.open]="users.length">
+            <ul *ngIf="users.length" class="dropdown-menu scrollable-menu">
+                <li (click)="changeInputAutoComplete(user.name)" *ngFor="let user of users">
+                    <a>{{user.name}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</form>

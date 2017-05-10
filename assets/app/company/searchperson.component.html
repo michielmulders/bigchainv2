@@ -1,14 +1,21 @@
 <div class="col-md-8 col-md-offset-2">
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-            <label for="name">Name</label>
-            <input type="name"
-                    id="name"
-                    class="form-control"
-                    formControlName="name">
+            <app-auto-complete-person></app-auto-complete-person>
+        </div>
+        <div class="form-group">
+            <label for="type">Type</label>
+            <select class="form-control" id="type" formControlName="type">
+                <option value="Neuro">Neuro</option>
+                <option value="Kankeronderzoek">Kankeronderzoek</option>
+                <option value="Hart">Hart</option>
+            </select>
         </div>
         <button class="btn btn-primary"
                 type="submit"
                 [disabled]="!myForm.valid">Submit</button>
     </form>
+    <br>
+    <hr>
+    {{ canDoTest }}
 </div>

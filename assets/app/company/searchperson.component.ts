@@ -8,21 +8,33 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 })
 export class SearchPersonComponent {
     myForm: FormGroup;
+    canDoTest: String; 
 
     constructor(private companyService: CompanyService) {}
 
     onSubmit() {
-        const name = this.myForm.value.name;
-        this.companyService.searchPersons(name)
-            .subscribe(
-                data => console.log(data)
-            ); // Return creeren en opvangen in var hier
+        /*this.companyService.searchPerson(this.companyService.createTestUser)
+        .subscribe(
+            data => {
+                data.canDoTest == true ? this.canDoTest = "Can't do test!" : this.canDoTest = "Can do test!";
+            },
+            error => console.error(error)
+        );*/
+
+        this.companyService.searchPersonType(this.companyService.createTestUser, this.myForm.value.type)
+        .subscribe(
+            data => {
+                data.canDoTest == true ? this.canDoTest = "Can't do test!" : this.canDoTest = "Can do test!";
+            },
+            error => console.error(error)
+        );
+
         this.myForm.reset();
     }
 
     ngOnInit() {
         this.myForm = new FormGroup({
-            name: new FormControl(null, [
+            type: new FormControl(null, [
                 Validators.required
             ])
         });

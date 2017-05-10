@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
-var Promise = require('es6-promise').Promise;
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
+const Promise = require('bluebird');
 
 const driver = require('js-bigchaindb-quickstart/dist/node');
 
@@ -20,94 +20,68 @@ router.use('/', function (req, res, next) {
     })
 });
 
-router.get('/searchPerson/:name', function(req, res, next) {
-    var promiseFindUser = userFunc.findOneUserName(req.params.name);
-
-    promiseFindUser.then(
-        user => {
-            return searchPerson(user);
-        }/*, // result: User object
-        err => res.status(500).json(err) // custom error message*/
-    ).then((result) => console.log("Result: ", result));
-
-    function searchPerson(user) {
-        var canDoTest = true;
-        // Get all transactions for a public key 
-        // Standard False: indicating if the result set should be limited to outputs that are available to spend. Defaults to “false”.
-        return driver.Connection.listOutputs(
-            {
-                public_key: new driver.Ed25519Keypair(user.password).publicKey, 
-                unspent: false
-            }, 
-            process.env.API_PATH_BDB)
-        .then(transactionIds => {
-            for (var index = 0; index < transactionIds.length; index++) {
-                driver.Connection.getTransaction(transactionIds[index].substr(16, 64), process.env.API_PATH_BDB)
-                    .then((res) => {
-                        driver.Connection.getTransaction(res.asset.id, process.env.API_PATH_BDB)
-                            .then((tx) => {
-                                if(((new Date().valueOf() - new Date(tx.asset.data.testDate).valueOf()) / (1000 * 60 * 60 * 24 * 365.25)) < 5 ) {
-                                    canDoTest = false;
-                                }
-                            });
-                    });
-            }
-
-            setTimeout(function() {
-                console.log("TEST DO? ", canDoTest); // Hier klopt de uitkomst // Slechte workaround
-            }, 2500);            
-        }).then(() => {return canDoTest});
-    }
-});
-
-/*promiseFindUser.then(
-        user => searchPerson(user), // result: User object
-        err => res.status(500).json(err) // custom error message
-    );*/
-
-    /*promiseFindUser
-        .catch((err) => res.status(500).json(err))
-        .then((user) => searchPersonNew(user))
-        .then((transactionIds) => {
-            console.log('Retrieve list of transactions for publicKey:', new driver.Ed25519Keypair(user.password).publicKey, "\n", transactionIds);
-        });*/
-
-        
-            /*console.log((new Date().valueOf() - new Date(this.myForm.value.date).valueOf()) / (1000 * 60 * 60 * 24 * 365.25));
-            if(((new Date().valueOf() - new Date(this.myForm.value.date).valueOf()) / (1000 * 60 * 60 * 24 * 365.25)) < 5 ) {
-                canDoTest = false;
-            }
-        });
-    }
-});
-    /*promiseFindUser
-        .then((user) => {
-            let userObj = new driver.Ed25519Keypair(user.password).publicKey;
-        
-            // Get all transactions for a public key 
-            // Standard False: indicating if the result set should be limited to outputs that are available to spend. Defaults to “false”.
-            driver.Connection.listOutputs(
+// LOOK AT OPERATION CREATE? GET /api/v1/transactions?asset_id={asset_id}&operation={CREATE|TRANSFER}
+router.get('/searchPersonType/:name/:type', (req, res, next) => {
+    console.log("search");
+    userFunc.findOneUserName(req.params.name)
+        .then(user => {
+            console.log('1');
+            return driver.Connection.listOutputs(
                 {
-                    public_key: new driver.Ed25519Keypair(user.password).publicKey, 
+                    public_key: new driver.Ed25519Keypair(user.password).publicKey,
                     unspent: false
-                }, 
+                },
                 process.env.API_PATH_BDB)
         })
-        .catch( err => res.status(500).json(err))
-        .then(transactionIds => {
-            // REMOVE
-            console.log('Retrieve list of transactions for publicKey:', new driver.Ed25519Keypair(user.password).publicKey, "\n", transactionIds);
-            console.log('\n\n');
-        });*/
+        .then(ids => {
+            const ONE_YEAR = 1000 * 60 * 60 * 24 * 365.25;
+            const promiseArray = ids.map(id => {
+                console.log(id);
+                return driver.Connection.getTransaction(id.substr(16, 64), process.env.API_PATH_BDB)
+                    .then(res => driver.Connection.getTransaction(res.asset.id, process.env.API_PATH_BDB))
+                    .then(tx => {
+                        if(tx.asset.data.testType == req.params.type) {
+                            return ((Date.now() - new Date(tx.asset.data.testDate).valueOf()) / ONE_YEAR >= 5);
+                        } else {
+                            return true;
+                        }
+                    }) 
+            });
+            // Code meer performant maken: ophalen testen stoppen als je al 1 false vindt hier!
 
+            // wacht tot alle checks zijn voldaan
+            return Promise.all(promiseArray);
+        })
+        // bevat de array een false
+        .then(listOfBooleans => {
+            var canDoTest = listOfBooleans.some(item => !item);
+             // listOfBooleans.some: Returned true als array false bevat (true => can't do test)
+            return res.status(200).json({
+                canDoTest: canDoTest
+            });
+        }).catch( error => {
+            return res.status(500).json({
+                title: 'An error occurred',
+                error: err
+            });
+        });
+});
 
-    /*promiseFindUser.then(function(user){
-        searchPerson(user);
-    }, function(err) {
-        return res.status(500).json(err);
-    });*/ // Code zonder arrow functions
-
-   
+router.get('/autoCompletePerson/:name', function(req, res, next) {
+    console.log('auto complete routes');
+    User.find({'name' : new RegExp(req.params.name, 'i')}, (err, users) => {
+        if (err) {
+            return res.status(500).json({
+                title: 'An error occurred',
+                error: err
+            });
+        } else {
+            return res.status(200).json({
+                users: users
+            });
+        }
+    });
+});
 
 router.post('/createTest', function (req, res, next) {
     // Find company who creates test

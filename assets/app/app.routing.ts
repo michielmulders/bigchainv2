@@ -1,3 +1,5 @@
+import { TESTPERSON_ROUTES } from './testperson/testperson.routes';
+import { TestPersonComponent } from './testperson/testperson.component';
 import { Routes, RouterModule } from "@angular/router";
 
 import { AuthenticationComponent } from "./auth/authentication.component";
@@ -8,7 +10,8 @@ import { COMPANY_ROUTES } from './company/company.routes';
 const APP_ROUTES: Routes = [
     { path: '', redirectTo: '/auth/signin', pathMatch: 'full' },
     { path: 'auth', component: AuthenticationComponent, children: AUTH_ROUTES },
-    { path: 'company', component: CompanyComponent, children: COMPANY_ROUTES }
+    { path: 'company', component: CompanyComponent, children: COMPANY_ROUTES },
+    { path: 'test', component: TestPersonComponent, children: TESTPERSON_ROUTES}
 ];
 
 export const routing = RouterModule.forRoot(APP_ROUTES);

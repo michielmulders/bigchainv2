@@ -1,3 +1,4 @@
+import { AutoCompletePerson } from './company/autocompleteperson.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -13,9 +14,12 @@ import { CompanyComponent } from './company/company.component';
 import { LogoutComponent } from "./auth/logout.component";
 import { SignupComponent } from "./auth/signup.component";
 import { SigninComponent } from "./auth/signin.component";
+import { TestPersonComponent } from './testperson/testperson.component';
+import { ListTestsComponent } from './testperson/listtests.component';
 
 import { AuthService } from "./auth/auth.service";
 import { CompanyService } from './company/company.service';
+import { TestPersonService } from './testperson/testperson.service';
 
 @NgModule({
     declarations: [
@@ -26,7 +30,10 @@ import { CompanyService } from './company/company.service';
         SigninComponent,
         CompanyComponent,
         CreateTestComponent,
-        SearchPersonComponent
+        SearchPersonComponent,
+        TestPersonComponent,
+        ListTestsComponent,
+        AutoCompletePerson
     ],
     imports: [
         BrowserModule,
@@ -35,7 +42,7 @@ import { CompanyService } from './company/company.service';
         ReactiveFormsModule,
         HttpModule
     ],
-    providers: [AuthService, CompanyService],
+    providers: [AuthService, CompanyService, TestPersonService],
     bootstrap: [AppComponent]
 })
 export class AppModule {

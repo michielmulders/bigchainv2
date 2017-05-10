@@ -8,6 +8,8 @@ import getRequestHeader from "../constants/headers";
 
 @Injectable()
 export class CompanyService {
+    createTestUser: string;
+
     constructor(private http: Http) {}
 
     createTest(test: Test) {
@@ -21,40 +23,22 @@ export class CompanyService {
     }
 
     // Search params: http://stackoverflow.com/questions/38475869/angular-2-http-get-with-params
-    searchPersons(name: string) {
+    searchPersonType(name: string, type: string) {
         const token = localStorage.getItem('token')
             ? '?token=' + localStorage.getItem('token')
             : '';
-        return this.http.get('http://localhost:3000/compv/searchPerson/' + name + token)
-            .map((response: Response) => {
-                const transactions = response.json().obj;
-                console.log(transactions);
-                /*let transformedMessages: Message[] = [];
-                for (let message of messages) {
-                    transformedMessages.push(new Message(
-                        message.content,
-                        message.user.firstName,
-                        message._id,
-                        message.user._id)
-                    );
-                }
-                this.messages = transformedMessages;
-                return transformedMessages;*/
-            })
-            .catch((error: Response) => Observable.throw(error.json()));
+        return this.http.get('http://localhost:3000/compv/searchPersonType/' + name + "/" + type + token, {headers: getRequestHeader("JSON")})
+            .map((response: Response) => response.json())
+            .catch((error: Response) => Observable.throw(error));
     }
 
-    searchPerson(name: string) {
+    getAutoCompletePerson(searchString: string) {
         const token = localStorage.getItem('token')
             ? '?token=' + localStorage.getItem('token')
             : '';
-        var userObj = {
-            name: name
-        };
-        const body = JSON.stringify(userObj);
-        console.log(body);
-        return this.http.post('http://localhost:3000/compv/searchPerson' + token, body, {headers: getRequestHeader("JSON")})
+        
+        return this.http.get('http://localhost:3000/compv/autoCompletePerson/' + searchString + token, {headers: getRequestHeader("JSON")})
             .map((response: Response) => response.json())
-            .catch((error: Response) => Observable.throw(error.json()));
+            .catch((error: Response) => Observable.throw(error));
     }
 }

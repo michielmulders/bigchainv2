@@ -3,6 +3,8 @@ import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { Test } from './test.model';
+import { User } from '../auth/user.model';
+import { Subject }    from 'rxjs/Subject';
 
 @Component({
     selector: 'app-create-test',
@@ -10,19 +12,16 @@ import { Test } from './test.model';
 })
 export class CreateTestComponent implements OnInit {
     myForm: FormGroup;
-    personName = '';
     
     constructor(private companyService: CompanyService) {}
 
     onSubmit() {
         const test = new Test(
-            this.myForm.value.name,
+            this.companyService.createTestUser, // name of user in MongoDB
             this.myForm.value.date,
             this.myForm.value.type,
             this.myForm.value.remark || ""
         );
-
-        console.log(test);
 
         this.companyService.createTest(test)
             .subscribe(
@@ -32,14 +31,9 @@ export class CreateTestComponent implements OnInit {
         this.myForm.reset();
     }
 
-    onKeypress() {
-        console.log(this.personName);
-    }
-
     ngOnInit() {
         this.myForm = new FormGroup({
-            name: new FormControl(null, Validators.required),
-            date: new FormControl(null, [
+            date: new FormControl((new Date()).toISOString().slice(0,10), [
                 Validators.pattern('[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}'),
                 Validators.required
             ]),
