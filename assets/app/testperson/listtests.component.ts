@@ -1,4 +1,4 @@
-import { TestPersonService } from './testperson.service';
+import { TestPersonService } from '../_services/testperson.service';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
@@ -18,7 +18,6 @@ export class ListTestsComponent implements OnInit {
     constructor(private testPersonService: TestPersonService) { }
 
     ngOnInit() {
-        console.log("listtests.component.ts");
         this.testPersonService.getTests()
         .subscribe(
             data => this.outputs = data,

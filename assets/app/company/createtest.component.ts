@@ -1,10 +1,11 @@
-import { CompanyService } from './company.service';
+import { CompanyService } from '../_services/company.service';
 import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
-import { Test } from './test.model';
-import { User } from '../auth/user.model';
+import { Test } from '../_models/test.model';
+import { User } from '../_models/user.model';
 import { Subject }    from 'rxjs/Subject';
+
 
 @Component({
     selector: 'app-create-test',
@@ -13,7 +14,9 @@ import { Subject }    from 'rxjs/Subject';
 export class CreateTestComponent implements OnInit {
     myForm: FormGroup;
     
-    constructor(private companyService: CompanyService) {}
+    constructor(private companyService: CompanyService) {
+        
+    }
 
     onSubmit() {
         const test = new Test(
@@ -28,7 +31,7 @@ export class CreateTestComponent implements OnInit {
                 data => console.log(data),
                 error => console.error(error)
             );
-        this.myForm.reset();
+        this.myForm.reset({date:(new Date()).toISOString().slice(0,10)}); // give new date to date formControl for default value
     }
 
     ngOnInit() {

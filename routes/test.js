@@ -24,7 +24,6 @@ router.get('/getTests', function (req, res, next) {
     var decoded = jwt.decode(req.query.token);
     var mUser = {};
 
-    console.log("test.js");
     User.findById(decoded.user._id, function (err, user) {
         if (err) {
             return res.status(500).json({
@@ -44,18 +43,6 @@ router.get('/getTests', function (req, res, next) {
     });
 
    function getOutputs() {
-        /*driver.Connection.listOutputs(
-        {
-            public_key: new driver.Ed25519Keypair(mUser.password).publicKey,
-            unspent: false
-        },
-        process.env.API_PATH_BDB)
-        .then(ids => {
-            return res.status(200).json({
-                transactionIds: ids
-            });
-        });*/
-
         driver.Connection.listOutputs(
         {
             public_key: new driver.Ed25519Keypair(mUser.password).publicKey,

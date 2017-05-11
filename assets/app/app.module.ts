@@ -17,9 +17,14 @@ import { SigninComponent } from "./auth/signin.component";
 import { TestPersonComponent } from './testperson/testperson.component';
 import { ListTestsComponent } from './testperson/listtests.component';
 
-import { AuthService } from "./auth/auth.service";
-import { CompanyService } from './company/company.service';
-import { TestPersonService } from './testperson/testperson.service';
+import { TestPersonService } from './_services/testperson.service';
+import { CompanyService } from './_services/company.service';
+import { AuthService } from './_services/auth.service';
+import { LocalStorageService } from './_services/localstorage.service';
+import { RequestService } from './_services/request.service';
+
+import { TestGuard } from './_guards/test.guard';
+import { CompanyGuard } from './_guards/company.guard';
 
 @NgModule({
     declarations: [
@@ -42,7 +47,7 @@ import { TestPersonService } from './testperson/testperson.service';
         ReactiveFormsModule,
         HttpModule
     ],
-    providers: [AuthService, CompanyService, TestPersonService],
+    providers: [AuthService, CompanyService, TestPersonService, RequestService, LocalStorageService, CompanyGuard, TestGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule {

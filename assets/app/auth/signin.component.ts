@@ -2,8 +2,9 @@ import { Component } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 
-import { User } from "./user.model";
-import { AuthService } from "./auth.service";
+import { User } from "../_models/user.model";
+import { AuthService } from "../_services/auth.service";
+import { LocalStorageService } from './../_services/localstorage.service';
 
 @Component({
     selector: 'app-signin',
@@ -12,17 +13,18 @@ import { AuthService } from "./auth.service";
 export class SigninComponent {
     myForm: FormGroup;
 
-    constructor(private authService: AuthService, private router: Router) {}
+    constructor(private authService: AuthService, private router: Router, private localStorageService: LocalStorageService) {}
 
     onSubmit() {
         const user = new User(this.myForm.value.email, this.myForm.value.password);
         this.authService.signin(user)
             .subscribe(
                 data => {
-                    localStorage.setItem('token', data.token);
+                    this.localStorageService.setToken(data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('company', data.company);
-                    this.router.navigateByUrl('/');
+                    
+                    (data.company) ? this.router.navigateByUrl('/company') : this.router.navigateByUrl('/test');
                 },
                 error => console.error(error)
             );
@@ -30,6 +32,8 @@ export class SigninComponent {
     }
 
     ngOnInit() {
+        this.localStorageService.clear();
+
         this.myForm = new FormGroup({
             email: new FormControl(null, [
                 Validators.required,

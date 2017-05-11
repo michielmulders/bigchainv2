@@ -1,7 +1,7 @@
-import { CompanyService } from './company.service';
+import { CompanyService } from '../_services/company.service';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { User } from '../auth/user.model';
+import { User } from '../_models/user.model';
 import { Subject }    from 'rxjs/Subject';
 
 @Component({

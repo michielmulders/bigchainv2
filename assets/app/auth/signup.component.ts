@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 
-import { AuthService } from "./auth.service";
-import { User } from "./user.model";
+import { AuthService } from "../_services/auth.service";
+import { LocalStorageService } from './../_services/localstorage.service';
+import { User } from "../_models/user.model";
 
 @Component({
     selector: 'app-signup',
@@ -12,7 +13,7 @@ export class SignupComponent implements OnInit {
     myForm: FormGroup;
     isCompany: boolean= false;
 
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService, private localStorageService: LocalStorageService) {}
 
     switchCompany(){
         this.isCompany = !this.isCompany;
@@ -37,6 +38,8 @@ export class SignupComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.localStorageService.clear();
+
         this.myForm = new FormGroup({
             name: new FormControl(null, Validators.required),
             birth: new FormControl(null, [
