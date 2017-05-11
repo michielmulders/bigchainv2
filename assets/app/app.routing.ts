@@ -1,3 +1,4 @@
+import { AuthGuard } from './_guards/auth.guard';
 import { TestGuard } from './_guards/test.guard';
 import { CompanyGuard } from './_guards/company.guard';
 
@@ -13,7 +14,7 @@ import { TESTPERSON_ROUTES } from './testperson/testperson.routes';
 
 const APP_ROUTES: Routes = [
     { path: '', redirectTo: '/auth/signin', pathMatch: 'full' },
-    { path: 'auth', component: AuthenticationComponent, children: AUTH_ROUTES },
+    { path: 'auth', component: AuthenticationComponent, children: AUTH_ROUTES, canActivate: [AuthGuard] },
     { path: 'company', component: CompanyComponent, children: COMPANY_ROUTES, canActivate: [CompanyGuard] },
     { path: 'test', component: TestPersonComponent, children: TESTPERSON_ROUTES, canActivate: [TestGuard] }
 ];

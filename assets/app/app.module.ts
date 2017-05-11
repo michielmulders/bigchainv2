@@ -16,6 +16,7 @@ import { SignupComponent } from "./auth/signup.component";
 import { SigninComponent } from "./auth/signin.component";
 import { TestPersonComponent } from './testperson/testperson.component';
 import { ListTestsComponent } from './testperson/listtests.component';
+import { FooterComponent } from './footer/footer.component';
 
 import { TestPersonService } from './_services/testperson.service';
 import { CompanyService } from './_services/company.service';
@@ -23,6 +24,7 @@ import { AuthService } from './_services/auth.service';
 import { LocalStorageService } from './_services/localstorage.service';
 import { RequestService } from './_services/request.service';
 
+import { AuthGuard } from './_guards/auth.guard';
 import { TestGuard } from './_guards/test.guard';
 import { CompanyGuard } from './_guards/company.guard';
 
@@ -38,7 +40,8 @@ import { CompanyGuard } from './_guards/company.guard';
         SearchPersonComponent,
         TestPersonComponent,
         ListTestsComponent,
-        AutoCompletePerson
+        AutoCompletePerson,
+        FooterComponent
     ],
     imports: [
         BrowserModule,
@@ -47,7 +50,7 @@ import { CompanyGuard } from './_guards/company.guard';
         ReactiveFormsModule,
         HttpModule
     ],
-    providers: [AuthService, CompanyService, TestPersonService, RequestService, LocalStorageService, CompanyGuard, TestGuard],
+    providers: [AuthService, CompanyService, TestPersonService, RequestService, LocalStorageService, CompanyGuard, TestGuard, AuthGuard],
     bootstrap: [AppComponent]
 })
 export class AppModule {

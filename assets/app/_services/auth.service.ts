@@ -20,11 +20,11 @@ export class AuthService {
         return this.requestService.request('/user/signin', JSON.stringify(user), "POST", false);
     }
 
-    logout() {
+    logout(): void {
         this.localStorageService.clear();
     }
 
-    isLoggedIn() {
-        return this.localStorageService.getToken() !== null;
+    isLoggedIn(): boolean {
+        return (this.localStorageService.getToken() !== '');
     }
 }
