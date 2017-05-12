@@ -14,7 +14,7 @@ var companyRoutes = require('./routes/company');
 var testRoutes = require('./routes/test');
 
 var app = express();
-mongoose.connect(process.env.MONGO_CONNECTION_PATH);
+mongoose.connect(process.env.MONGO_CONNECTION_PATH); // Connect to MongoDB so we can use schema to perform actions e.g. User.findOne()
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,6 +34,7 @@ app.use(function (req, res, next) {
     next();
 });
 
+// Backend API Routes
 app.use('/compv', companyRoutes);
 app.use('/user', userRoutes);
 app.use('/testv', testRoutes);

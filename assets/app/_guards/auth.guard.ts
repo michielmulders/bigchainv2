@@ -7,6 +7,7 @@ export class AuthGuard implements CanActivate {
  
     constructor(private router: Router, private localStorageService: LocalStorageService) { }
  
+    // Determine if user can access APP_PATH/auth/*
     canActivate() {
         if (this.localStorageService.getToken() == '') {
             // not logged in so return true

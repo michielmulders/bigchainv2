@@ -9,6 +9,7 @@ import { Component } from '@angular/core';
 export class AppComponent {
     constructor(private authService: AuthService) {}
 
+    // Function used for determining if footer is showed
     isLoggedIn() {
         return this.authService.isLoggedIn();
     }

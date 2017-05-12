@@ -1,5 +1,6 @@
 import { Headers } from "@angular/http";
 
+// Contains switch to return right Content-Type header 
 export default function getRequestHeader(TYPE: string) {
     let header = '';
 

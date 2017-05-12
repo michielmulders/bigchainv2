@@ -16,9 +16,8 @@ export class SignupComponent implements OnInit {
     constructor(private authService: AuthService, private localStorageService: LocalStorageService) {}
 
     switchCompany(){
-        this.isCompany = !this.isCompany;
+        this.isCompany = !this.isCompany; // Used for dynamically changing form to add test person/company
     }
-
 
     onSubmit() {
         const user = new User(
@@ -34,11 +33,10 @@ export class SignupComponent implements OnInit {
                 error => console.error(error)
             );
         this.myForm.reset();
-        // Redirect: zie signin.component
     }
 
     ngOnInit() {
-        this.localStorageService.clear();
+        this.localStorageService.clear(); // Clear localstorage when signupComponent is visited
 
         this.myForm = new FormGroup({
             name: new FormControl(null, Validators.required),

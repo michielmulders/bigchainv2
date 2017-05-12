@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
     selector: 'app-search-person',
     templateUrl: 'searchperson.component.html'
 })
+// Component for checking if person can do test of specific type
 export class SearchPersonComponent {
     myForm: FormGroup;
     canDoTest: String; 
@@ -16,7 +17,7 @@ export class SearchPersonComponent {
         this.companyService.searchPersonType(this.companyService.createTestUser, this.myForm.value.type)
         .subscribe(
             data => {
-                data.canDoTest == true ? this.canDoTest = "Can't do test!" : this.canDoTest = "Can do test!";
+                data.canDoTest == true ? this.canDoTest = "Can't do test!" : this.canDoTest = "Can do test!"; // Show if person can do test
             },
             error => console.error(error)
         );

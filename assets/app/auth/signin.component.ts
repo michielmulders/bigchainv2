@@ -20,10 +20,12 @@ export class SigninComponent {
         this.authService.signin(user)
             .subscribe(
                 data => {
+                    // Set token, userId and isCompany to localStorage
                     this.localStorageService.setToken(data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('company', data.company);
                     
+                    // Navigate to /test or /comp based on user if he is a company
                     (data.company) ? this.router.navigateByUrl('/company') : this.router.navigateByUrl('/test');
                 },
                 error => console.error(error)

@@ -7,6 +7,7 @@ export class CompanyGuard implements CanActivate {
  
     constructor(private router: Router, private localStorageService: LocalStorageService) { }
  
+    // Determine if user can access APP_PATH/company/*
     canActivate() {
         if (this.localStorageService.getToken() != '' && localStorage.getItem('company')) {
             // logged in as company so return true

@@ -1,3 +1,4 @@
+// Ng2 Model for User Object
 export class User {
     constructor(
         public email: string,

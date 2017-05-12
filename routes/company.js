@@ -8,6 +8,7 @@ const driver = require('js-bigchaindb-quickstart/dist/node');
 
 var userFunc = require('../models/user.func');
 
+// First make sure if user is authenticated
 router.use('/', function (req, res, next) {
     jwt.verify(req.query.token, 'secret', function (err, decoded) {
         if (err) {
@@ -20,12 +21,13 @@ router.use('/', function (req, res, next) {
     })
 });
 
-// LOOK AT OPERATION CREATE? GET /api/v1/transactions?asset_id={asset_id}&operation={CREATE|TRANSFER}
+// OPTIONAL: LOOK AT OPERATION CREATE? GET /api/v1/transactions?asset_id={asset_id}&operation={CREATE|TRANSFER}
+// Search if test person can do a test of a certain type : RETURN Boolean
 router.get('/searchPersonType/:name/:type', (req, res, next) => {
-    console.log("search");
+    // Find user based on name
     userFunc.findOneUserName(req.params.name)
         .then(user => {
-            console.log('1');
+            // User public key of user to list all transactions connected to user
             return driver.Connection.listOutputs(
                 {
                     public_key: new driver.Ed25519Keypair(user.password).publicKey,
@@ -34,7 +36,12 @@ router.get('/searchPersonType/:name/:type', (req, res, next) => {
                 process.env.API_PATH_BDB)
         })
         .then(ids => {
+            // Get Transfer transaction for Id and further find the Create transaction for Id in res.asset
+            // Next check if type is right and calculate difference in years between creation of asset and Date.now
+            // Returned false if difference is lower than 5 years
             const ONE_YEAR = 1000 * 60 * 60 * 24 * 365.25;
+
+            // Add all promises to array to be executed later synchronous
             const promiseArray = ids.map(id => {
                 console.log(id);
                 return driver.Connection.getTransaction(id.substr(16, 64), process.env.API_PATH_BDB)
@@ -47,15 +54,14 @@ router.get('/searchPersonType/:name/:type', (req, res, next) => {
                         }
                     }) 
             });
-            // Code meer performant maken: ophalen testen stoppen als je al 1 false vindt hier!
+            // OPTIONAL: Make code more performant by stopping here when you find one FALSE
 
-            // wacht tot alle checks zijn voldaan
+            // Wait untill all promises are executed
             return Promise.all(promiseArray);
         })
-        // bevat de array een false
+        // Check if array contains FALSE -> Return true if yes (true => can't do test)
         .then(listOfBooleans => {
             var canDoTest = listOfBooleans.some(item => !item);
-             // listOfBooleans.some: Returned true als array false bevat (true => can't do test)
             return res.status(200).json({
                 canDoTest: canDoTest
             });
@@ -67,8 +73,9 @@ router.get('/searchPersonType/:name/:type', (req, res, next) => {
         });
 });
 
+/* Function for finding all users for searchstring (autocomplete function) */
 router.get('/autoCompletePerson/:name', function(req, res, next) {
-    console.log('auto complete routes');
+    // Search like this 'name*' and flag 'i' ignores case
     User.find({'name' : new RegExp(req.params.name, 'i')}, (err, users) => {
         if (err) {
             return res.status(500).json({
@@ -84,13 +91,11 @@ router.get('/autoCompletePerson/:name', function(req, res, next) {
 });
 
 router.post('/createTest', function (req, res, next) {
-    // Find company who creates test
     var decoded = jwt.decode(req.query.token);
     var mUser = {};
     var mCompany = {};
 
-    console.log("\nToken: " + req.query.token);
-
+    // Find company who creates test
     User.findById(decoded.user._id, function (err, company) {
         if (err) {
             return res.status(500).json({
@@ -119,6 +124,7 @@ router.post('/createTest', function (req, res, next) {
                 });
             } else {
                 mUser = user;
+                // Create and Transfer transaction
                 createTransaction();
             }
         });
@@ -131,14 +137,13 @@ router.post('/createTest', function (req, res, next) {
         // Create keypair test person
         const testperson = new driver.Ed25519Keypair(mUser.password);
 
-        ///////
-        console.log("\nCompany: " + company.publicKey);
+        /*console.log("\nCompany: " + company.publicKey);
         console.log("\nPerson: " + testperson.publicKey);
-        console.log("\nToken: " + req.body.name + " " + req.body.testType + " " + req.body.date + " ,remark: " + req.body.remark);
-        //////
+        console.log("\nToken: " + req.body.name + " " + req.body.testType + " " + req.body.date + " ,remark: " + req.body.remark);*/
     
         var txTransferTestPersonSigned;
-        // Create asset to register medical test
+
+        // Create asset to register test
         const txCreateCompanySimple = driver.Transaction.makeCreateTransaction(
             {
                 'testPerson': req.body.name,
@@ -148,7 +153,7 @@ router.post('/createTest', function (req, res, next) {
             {'testRemark': req.body.remark},
             [driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(company.publicKey))],
             company.publicKey
-        ); // ASSETS // METADATA // CONDITIONS // CREATOR SIGNATURE (public)
+        ); // ASSETS // METADATA // [CONDITIONS] // CREATOR SIGNATURE (public)
         
         // Sign transaction (tx) wiht company key (private) [CREATE]
         const txCreateCompanySimpleSigned = driver.Transaction.signTransaction(txCreateCompanySimple, company.privateKey);
@@ -165,10 +170,10 @@ router.post('/createTest', function (req, res, next) {
                     .then((res) => console.log('Transaction status:', res.status));
                 // poll the status every 0.5 seconds
                 return driver.Connection.pollStatusAndFetchTransaction(txCreateCompanySimpleSigned.id, process.env.API_PATH_BDB)
-            })*/ // Create status pollen blijft vasthangen 
+            })*/ // Create status fetching is stuck in loop ? 
             .then((res) => {
                 return driver.Connection.pollStatusAndFetchTransaction(txCreateCompanySimpleSigned.id, process.env.API_PATH_BDB);
-            }) // added this myself
+            }) // added this myself to replace polling function above
             .then((res) => {
                 // Transfer asset to test person [TRANSFER]
                 const txTransferTestPerson = driver.Transaction.makeTransferTransaction(
@@ -179,12 +184,12 @@ router.post('/createTest', function (req, res, next) {
                 // sign with company's private key
                 txTransferTestPersonSigned = driver.Transaction.signTransaction(txTransferTestPerson, company.privateKey);
                 
-                // post and poll status
+                // post tx and poll status
                 return driver.Connection.postTransaction(txTransferTestPersonSigned, process.env.API_PATH_BDB)
             })
             .then((res) => {
                 console.log('Response from BDB server:', res);
-                console.log('REACHED END'); // HAS TO BE REMOVED
+                console.log('REACHED END');
                 return driver.Connection.pollStatusAndFetchTransaction(txTransferTestPersonSigned.id, process.env.API_PATH_BDB);
             });
     }

@@ -13,7 +13,8 @@ var userSchema = new Schema({
 
 userSchema.plugin(mongooseUniqueValidator);
 // Install: npm install --save mongoose-unique-validator
-// Zodat unique echt werkt (anders kan je meerdere malen unique inserten)
+// To assure that every email is unique
 
 var User = mongoose.model('User', userSchema);
 module.exports = User;
+// Mongo Schema for User object

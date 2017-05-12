@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 
+// Service for localStorage related functions
 @Injectable()
 export class LocalStorageService {
     constructor() {}
@@ -18,10 +19,12 @@ export class LocalStorageService {
             : '';
     }
 
+    // Set new token for user which has logged in
     setToken(token: string) {
         localStorage.setItem('token', token);
     }
 
+    // Clear localstorage
     clear() {
         localStorage.clear();
     }

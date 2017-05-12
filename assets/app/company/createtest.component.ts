@@ -14,24 +14,23 @@ import { Subject }    from 'rxjs/Subject';
 export class CreateTestComponent implements OnInit {
     myForm: FormGroup;
     
-    constructor(private companyService: CompanyService) {
-        
-    }
+    constructor(private companyService: CompanyService) {}
 
     onSubmit() {
         const test = new Test(
-            this.companyService.createTestUser, // name of user in MongoDB
+            this.companyService.createTestUser, // name of selected user from autocomplete dropdown
             this.myForm.value.date,
             this.myForm.value.type,
             this.myForm.value.remark || ""
         );
 
+        // Create Test on BigchainDB
         this.companyService.createTest(test)
             .subscribe(
                 data => console.log(data),
                 error => console.error(error)
             );
-        this.myForm.reset({date:(new Date()).toISOString().slice(0,10)}); // give new date to date formControl for default value
+        this.myForm.reset({date:(new Date()).toISOString().slice(0,10)}); // Give new date to date formControl for default value
     }
 
     ngOnInit() {

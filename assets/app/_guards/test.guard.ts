@@ -7,6 +7,7 @@ export class TestGuard implements CanActivate {
  
     constructor(private router: Router, private localStorageService: LocalStorageService) { }
  
+    // Determine if user can access APP_PATH/test/*
     canActivate() {
         if (this.localStorageService.getToken() != '' && !localStorage.getItem('company')) {
             // logged in as testperson so return true

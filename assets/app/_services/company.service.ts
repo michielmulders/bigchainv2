@@ -7,9 +7,10 @@ import { Observable } from "rxjs";
 import { Test } from "../_models/test.model";
 import getRequestHeader from "../_constants/headers";
 
+// Service for company related functions
 @Injectable()
 export class CompanyService {
-    createTestUser: string;
+    createTestUser: string; // Variable for passing selected user between components
 
     constructor(private http: Http, private requestService: RequestService) {}
 
@@ -17,11 +18,13 @@ export class CompanyService {
         return this.requestService.request('/compv/createTest', JSON.stringify(test), "POST");
     }
 
-    // Search params: http://stackoverflow.com/questions/38475869/angular-2-http-get-with-params
+    // OPTIONAL: Search params: http://stackoverflow.com/questions/38475869/angular-2-http-get-with-params
+    // Return boolean if testperson can do test of specific type
     searchPersonType(name: string, type: string) {
         return this.requestService.request('/compv/searchPersonType/' + name + "/" + type);
     }
 
+    // Get list of testpersons for search string (used in autocomplete)
     getAutoCompletePerson(searchString: string) {
         return this.requestService.request('/compv/autoCompletePerson/' + searchString);
     }

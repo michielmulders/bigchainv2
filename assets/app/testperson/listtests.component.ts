@@ -13,6 +13,7 @@ import { Component, OnInit } from '@angular/core';
         }
     `]
 })
+// Component lists all tests created for this test person
 export class ListTestsComponent implements OnInit {
     outputs = [];
     constructor(private testPersonService: TestPersonService) { }

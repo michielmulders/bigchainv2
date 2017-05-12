@@ -5,6 +5,7 @@ var jwt = require('jsonwebtoken');
 
 var User = require('../models/user');
 
+// Save new user to database (signup)
 router.post('/', function (req, res, next) {
     var user = new User({
         email: req.body.email,
@@ -27,6 +28,7 @@ router.post('/', function (req, res, next) {
     });
 });
 
+// Signin user and return token, userId and isCompany
 router.post('/signin', function(req, res, next) {
     User.findOne({email: req.body.email}, function(err, user) {
         if (err) {

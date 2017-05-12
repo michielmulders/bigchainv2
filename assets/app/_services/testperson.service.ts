@@ -7,11 +7,12 @@ import { RequestService } from "./request.service";
 
 import getRequestHeader from "../_constants/headers";
 
+// Service for test person related functions
 @Injectable()
 export class TestPersonService {
     constructor(private http: Http, private requestService: RequestService) {}
 
-    // get tests for person 
+    // Get tests for person 
     getTests() {
         return this.requestService.request("/testv/getTests");
     }

@@ -11,6 +11,7 @@ import { AuthService } from "../_services/auth.service";
         </div>
     `
 })
+/* Component with just a logout button -> for development fast logout */
 export class LogoutComponent {
     constructor(private authService: AuthService, private router: Router) { }
 

@@ -18,6 +18,7 @@ import { Component } from '@angular/core';
         }
     `]
 })
+// Component adds footer to all pages if logged in for easy logging out
 export class FooterComponent {
     constructor(private authService: AuthService, private router: Router) { }
 

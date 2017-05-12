@@ -4,8 +4,7 @@ import { Component } from "@angular/core";
     selector: 'app-company',
     templateUrl: './company.component.html'
 })
+// Head Component of Company route ('/comp')
 export class CompanyComponent {
     constructor() {}
-
-    
 }
