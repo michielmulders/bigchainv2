@@ -1,5 +1,5 @@
 {
-  "name": "udemy-nodejs-angular2",
+  "name": "testbunnies",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -20,6 +20,8 @@
     "@angular/router": "3.0.1",
     "@angular/upgrade": "2.0.1",
     "bcryptjs": "^2.3.0",
+    "bigchaindb-driver": "^0.3.0",
+    "bip39": "^2.4.0",
     "bluebird": "^3.5.0",
     "body-parser": "~1.15.2",
     "cookie-parser": "~1.4.3",
@@ -39,6 +41,7 @@
     "reflect-metadata": "^0.1.3",
     "rxjs": "5.0.0-beta.12",
     "serve-favicon": "~2.3.0",
+    "text-encoding": "^0.6.4",
     "zone.js": "^0.6.23"
   },
   "devDependencies": {

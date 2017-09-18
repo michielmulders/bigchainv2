@@ -3,8 +3,10 @@ var router = express.Router();
 var jwt = require('jsonwebtoken');
 var User = require('../models/user');
 const Promise = require('bluebird');
+const bip39 = require('bip39')
 
-const driver = require('js-bigchaindb-quickstart/dist/node');
+const driver = require('bigchaindb-driver');
+const conn = new driver.Connection(process.env.API_PATH_BDB)
 
 var userFunc = require('../models/user.func');
 
@@ -28,12 +30,11 @@ router.get('/searchPersonType/:name/:type', (req, res, next) => {
     userFunc.findOneUserName(req.params.name)
         .then(user => {
             // User public key of user to list all transactions connected to user
-            return driver.Connection.listOutputs(
+            return conn.listOutputs(
                 {
                     public_key: new driver.Ed25519Keypair(user.password).publicKey,
                     unspent: false
-                },
-                process.env.API_PATH_BDB)
+                })
         })
         .then(ids => {
             // Get Transfer transaction for Id and further find the Create transaction for Id in res.asset
@@ -44,8 +45,8 @@ router.get('/searchPersonType/:name/:type', (req, res, next) => {
             // Add all promises to array to be executed later synchronous
             const promiseArray = ids.map(id => {
                 console.log(id);
-                return driver.Connection.getTransaction(id.substr(16, 64), process.env.API_PATH_BDB)
-                    .then(res => driver.Connection.getTransaction(res.asset.id, process.env.API_PATH_BDB))
+                return conn.getTransaction(id.substr(16, 64))
+                    .then(res => conn.getTransaction(res.asset.id))
                     .then(tx => {
                         if(tx.asset.data.testType == req.params.type) {
                             return ((Date.now() - new Date(tx.asset.data.testDate).valueOf()) / ONE_YEAR >= 5);
@@ -91,6 +92,8 @@ router.get('/autoCompletePerson/:name', function(req, res, next) {
 });
 
 router.post('/createTest', function (req, res, next) {
+    console.log("create test section");
+
     var decoded = jwt.decode(req.query.token);
     var mUser = {};
     var mCompany = {};
@@ -131,11 +134,29 @@ router.post('/createTest', function (req, res, next) {
     }
 
     function createTransaction() {
+        console.log("create transaction!");
+        
+        function str2ab(str) {
+            var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
+            var bufView = new Uint16Array(buf);
+            for (var i=0, strLen=str.length; i<strLen; i++) {
+              bufView[i] = str.charCodeAt(i);
+            }
+            return buf;
+        }
+
         // Create keypair company 
-        const company = new driver.Ed25519Keypair(mCompany.password);
+        //const company = new driver.Ed25519Keypair(new Uint8Array(str2ab(mCompany.password)));
 
         // Create keypair test person
-        const testperson = new driver.Ed25519Keypair(mUser.password);
+        // const testperson = new driver.Ed25519Keypair(new Uint8Array(str2ab(mUser.password)));
+
+        // Create keypair company 
+        const company = new driver.Ed25519Keypair(bip39.mnemonicToSeed(mCompany.password).slice(0, 32));
+        
+        // Create keypair test person
+        const testperson = new driver.Ed25519Keypair(bip39.mnemonicToSeed(mUser.password).slice(0, 32));
+
 
         /*console.log("\nCompany: " + company.publicKey);
         console.log("\nPerson: " + testperson.publicKey);
@@ -143,6 +164,7 @@ router.post('/createTest', function (req, res, next) {
     
         var txTransferTestPersonSigned;
 
+        console.log("cr1");
         // Create asset to register test
         const txCreateCompanySimple = driver.Transaction.makeCreateTransaction(
             {
@@ -155,26 +177,28 @@ router.post('/createTest', function (req, res, next) {
             company.publicKey
         ); // ASSETS // METADATA // [CONDITIONS] // CREATOR SIGNATURE (public)
         
+        console.log("cr2");
         // Sign transaction (tx) wiht company key (private) [CREATE]
         const txCreateCompanySimpleSigned = driver.Transaction.signTransaction(txCreateCompanySimple, company.privateKey);
         
         console.log(txCreateCompanySimpleSigned);
 
         // send tx to bigchaindb
-        driver.Connection.postTransaction(txCreateCompanySimpleSigned, process.env.API_PATH_BDB)
+        conn.postTransaction(txCreateCompanySimpleSigned)
             /*.then((res) => {
                 console.log('Response from BDB server', res);
                 // request the status
-                driver.Connection
-                    .getStatus(txCreateCompanySimpleSigned.id, API_PATH)
+                conn.getStatus(txCreateCompanySimpleSigned.id)
                     .then((res) => console.log('Transaction status:', res.status));
                 // poll the status every 0.5 seconds
-                return driver.Connection.pollStatusAndFetchTransaction(txCreateCompanySimpleSigned.id, process.env.API_PATH_BDB)
+                return conn.pollStatusAndFetchTransaction(txCreateCompanySimpleSigned.id)
             })*/ // Create status fetching is stuck in loop ? 
-            .then((res) => {
-                return driver.Connection.pollStatusAndFetchTransaction(txCreateCompanySimpleSigned.id, process.env.API_PATH_BDB);
+            .then(() => {
+                console.log("fetching creat");
+                return conn.pollStatusAndFetchTransaction(txCreateCompanySimpleSigned.id);
             }) // added this myself to replace polling function above
             .then((res) => {
+                console.log("preparing transfer");
                 // Transfer asset to test person [TRANSFER]
                 const txTransferTestPerson = driver.Transaction.makeTransferTransaction(
                     txCreateCompanySimpleSigned,
@@ -185,12 +209,14 @@ router.post('/createTest', function (req, res, next) {
                 txTransferTestPersonSigned = driver.Transaction.signTransaction(txTransferTestPerson, company.privateKey);
                 
                 // post tx and poll status
-                return driver.Connection.postTransaction(txTransferTestPersonSigned, process.env.API_PATH_BDB)
+                return conn.postTransaction(txTransferTestPersonSigned)
             })
             .then((res) => {
                 console.log('Response from BDB server:', res);
                 console.log('REACHED END');
-                return driver.Connection.pollStatusAndFetchTransaction(txTransferTestPersonSigned.id, process.env.API_PATH_BDB);
+                console.log(res);
+                //return conn.pollStatusAndFetchTransaction(txTransferTestPersonSigned.id);
+                return "ok";
             });
     }
 });

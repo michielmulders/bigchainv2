@@ -24,9 +24,19 @@ export class SigninComponent {
                     this.localStorageService.setToken(data.token);
                     localStorage.setItem('userId', data.userId);
                     localStorage.setItem('company', data.company);
-                    
+
+                    console.log("signin component");
+                    console.log("\ncompdata : ", data.company);
                     // Navigate to /test or /comp based on user if he is a company
-                    (data.company) ? this.router.navigateByUrl('/company') : this.router.navigateByUrl('/test');
+                    //(data.company) ? this.router.navigateByUrl('/company') : this.router.navigateByUrl('/test');
+
+                    if(data.company) { 
+                        console.log("\ncompany route");
+                        this.router.navigateByUrl('/company') 
+                    } else {
+                        console.log("\ntest route");
+                        this.router.navigateByUrl('/test');
+                    }
                 },
                 error => console.error(error)
             );

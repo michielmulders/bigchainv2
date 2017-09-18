@@ -3,10 +3,12 @@ var router = express.Router();
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 const Promise = require('bluebird');
+const bip39 = require('bip39')
 
 var User = require('../models/user');
 
-const driver = require('js-bigchaindb-quickstart/dist/node');
+const driver = require('bigchaindb-driver');
+const conn = new driver.Connection(process.env.API_PATH_BDB)
 
 router.use('/', function (req, res, next) {
     jwt.verify(req.query.token, 'secret', function (err, decoded) {
@@ -46,18 +48,19 @@ router.get('/getTests', function (req, res, next) {
     });
 
    function getOutputs() {
+        console.log("public key user: " + new driver.Ed25519Keypair(bip39.mnemonicToSeed(mUser.password).slice(0, 32)).publicKey);
+
         // Get outputs for user based on public key
-        driver.Connection.listOutputs(
-        {
-            public_key: new driver.Ed25519Keypair(mUser.password).publicKey,
-            unspent: false
-        },
-        process.env.API_PATH_BDB)
+        // listOutputs( publicKey, unspent )
+        conn.listOutputs(
+            new driver.Ed25519Keypair(bip39.mnemonicToSeed(mUser.password).slice(0, 32)).publicKey,
+            false
+        )
         // Find all transfer txs for user and further find all create txs 
         .then(ids => {
             const promiseArray = ids.map(id => {
-                return driver.Connection.getTransaction(id.substr(16, 64), process.env.API_PATH_BDB)
-                    .then(res => (driver.Connection.getTransaction(res.asset.id, process.env.API_PATH_BDB)));
+                return conn.getTransaction(id.substr(16, 64))
+                    .then(res => (conn.getTransaction(res.asset.id)));
             });
 
             return Promise.all(promiseArray); // Execute all promises and return array of transactions
