@@ -31,21 +31,19 @@ router.get('/searchPersonType/:name/:type', (req, res, next) => {
         .then(user => {
             // User public key of user to list all transactions connected to user
             return conn.listOutputs(
-                {
-                    public_key: new driver.Ed25519Keypair(user.password).publicKey,
-                    unspent: false
-                })
+                new driver.Ed25519Keypair(bip39.mnemonicToSeed(user.password).slice(0, 32)).publicKey,
+                false
+            )
         })
-        .then(ids => {
+        .then(txs => {
             // Get Transfer transaction for Id and further find the Create transaction for Id in res.asset
             // Next check if type is right and calculate difference in years between creation of asset and Date.now
             // Returned false if difference is lower than 5 years
             const ONE_YEAR = 1000 * 60 * 60 * 24 * 365.25;
 
             // Add all promises to array to be executed later synchronous
-            const promiseArray = ids.map(id => {
-                console.log(id);
-                return conn.getTransaction(id.substr(16, 64))
+            const promiseArray = txs.map(tx => {
+                return conn.getTransaction(tx.transaction_id)
                     .then(res => conn.getTransaction(res.asset.id))
                     .then(tx => {
                         if(tx.asset.data.testType == req.params.type) {
@@ -134,23 +132,6 @@ router.post('/createTest', function (req, res, next) {
     }
 
     function createTransaction() {
-        console.log("create transaction!");
-        
-        function str2ab(str) {
-            var buf = new ArrayBuffer(str.length*2); // 2 bytes for each char
-            var bufView = new Uint16Array(buf);
-            for (var i=0, strLen=str.length; i<strLen; i++) {
-              bufView[i] = str.charCodeAt(i);
-            }
-            return buf;
-        }
-
-        // Create keypair company 
-        //const company = new driver.Ed25519Keypair(new Uint8Array(str2ab(mCompany.password)));
-
-        // Create keypair test person
-        // const testperson = new driver.Ed25519Keypair(new Uint8Array(str2ab(mUser.password)));
-
         // Create keypair company 
         const company = new driver.Ed25519Keypair(bip39.mnemonicToSeed(mCompany.password).slice(0, 32));
         

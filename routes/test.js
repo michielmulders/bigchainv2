@@ -57,9 +57,10 @@ router.get('/getTests', function (req, res, next) {
             false
         )
         // Find all transfer txs for user and further find all create txs 
-        .then(ids => {
-            const promiseArray = ids.map(id => {
-                return conn.getTransaction(id.substr(16, 64))
+        .then(txs => {
+            console.log(txs);
+            const promiseArray = txs.map(tx => {
+                return conn.getTransaction(tx.transaction_id)
                     .then(res => (conn.getTransaction(res.asset.id)));
             });
 
