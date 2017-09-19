@@ -39,7 +39,7 @@ const searchPersonByType = (req, res, next) => {
         }).catch( error => {
             return res.status(500).json({
                 title: 'An error occurred',
-                error: err
+                error: error
             })
         })
 }
@@ -57,7 +57,7 @@ const checkListOutputsForUser = (txs) => {
     // Next check if type is right and calculate difference in years between creation of asset and Date.now
     // Returned false if difference is lower than 5 years
     const ONE_YEAR = 1000 * 60 * 60 * 24 * 365.25;
-    
+
     // Add all promises to array to be executed later synchronous
     var promiseArray = txs.map(tx => {
         return conn.getTransaction(tx.transaction_id)
@@ -77,21 +77,12 @@ const checkListOutputsForUser = (txs) => {
 
 router.get('/searchPersonType/:name/:type', searchPersonByType)
 
-/* Function for finding all users for searchstring (autocomplete function) */
+// Function for finding all users for searchstring (autocomplete function)
 router.get('/autoCompletePerson/:name', function(req, res, next) {
-    // Search like this 'name*' and flag 'i' ignores case
-    User.find({'name' : new RegExp(req.params.name, 'i')}, (err, users) => {
-        if (err) {
-            return res.status(500).json({
-                title: 'An error occurred',
-                error: err
-            });
-        } else {
-            return res.status(200).json({
-                users: users
-            });
-        }
-    });
+    // @regex: flag 'i' ignores case
+    userFunc.findUsersByName(new RegExp(req.params.name, 'i'))
+        .then(users => (res.status(200).json({users: users})))
+        .catch(error => (res.status(500).json({error: error})))
 });
 
 var signedTx;
