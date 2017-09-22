@@ -15,40 +15,23 @@ router.post('/', function (req, res, next) {
         company: req.body.company
     });
     user.save(function(err, result) {
-        if (err) {
-            return res.status(500).json({
-                title: 'An error occurred',
-                error: err
-            });
-        }
-        return res.status(201).json({
-            message: 'User created',
-            obj: result
-        });
+        (err) 
+            ? (res.status(500).json({title: 'An error occurred', error: err})) 
+            : (res.status(201).json({message: 'User created', user: result}))
     });
 });
 
 // Signin user and return token, userId and isCompany
 router.post('/signin', function(req, res, next) {
-    User.findOne({email: req.body.email}, function(err, user) {
-        if (err) {
-            return res.status(500).json({
-                title: 'An error occurred',
-                error: err
-            });
-        }
-        if (!user) {
-            return res.status(401).json({
-                title: 'Login failed',
-                error: {message: 'Invalid login credentials'}
-            });
-        }
+    User.findOne({email: req.body.email}, (err, user) => {
+        if (err) (res.status(500).json({error: err}))
+
+        if (!user) (res.status(401).json({title: 'Login failed', error: 'Invalid login credentials'}))
+
         if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.status(401).json({
-                title: 'Login failed',
-                error: {message: 'Invalid login credentials'}
-            });
+            (res.status(401).json({title: 'Login failed', error: 'Invalid password (don\'t mention in production'}))
         }
+
         var token = jwt.sign({user: user}, 'secret', {expiresIn: 7200});
         return res.status(200).json({
             message: 'Successfully logged in',

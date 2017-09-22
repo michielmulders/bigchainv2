@@ -13,14 +13,8 @@ const driver = require('bigchaindb-driver')
 const conn = new driver.Connection(process.env.API_PATH_BDB)
 
 router.use('/', function (req, res, next) {
-    jwt.verify(req.query.token, 'secret', function (err, decoded) {
-        if (err) {
-            return res.status(401).json({
-                title: 'Not Authenticated',
-                error: err
-            });
-        }
-        next();
+    jwt.verify(req.query.token, 'secret', (err, decoded) => {
+        (err) ? (res.status(401).json({title: 'Not authenticated', error: err})) : next();
     })
 });
 
@@ -28,25 +22,12 @@ const searchUserById = (req, res, next) => {
     userFunc.findUserById(jwt.decode(req.query.token).user._id)
         .then(getListOutputsForUser)
         .then(getAssetsForUser)
-        .then(listOfTxs => {
-            return res.status(200).json({
-                transactions: listOfTxs
-            });
-        }).catch(error => {
-            return res.status(500).json({
-                title: 'An error occurred',
-                error: err
-            });
-        });
+        .then(listOfTxs => (res.status(200).json({transactions: listOfTxs})))
+        .catch(error => (res.status(500).json({'title': 'An error occurred', 'error': error})))
 }
 
 // User public key of user to list all transactions connected to user
-const getListOutputsForUser = (user) => {
-    return conn.listOutputs(
-        new driver.Ed25519Keypair(bip39.mnemonicToSeed(user.password).slice(0, 32)).publicKey,
-        false
-    )
-}
+const getListOutputsForUser = (user) => (conn.listOutputs(new driver.Ed25519Keypair(bip39.mnemonicToSeed(user.password).slice(0, 32)).publicKey))
 
 // Find all transfer txs for user and further find all create txs 
 const getAssetsForUser = (txs) => {

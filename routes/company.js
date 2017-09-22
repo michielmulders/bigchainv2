@@ -13,14 +13,8 @@ var gCompany, gTestperson;
 
 // First make sure if user is authenticated
 router.use('/', function (req, res, next) {
-    jwt.verify(req.query.token, 'secret', function (err, decoded) {
-        if (err) {
-            return res.status(401).json({
-                title: 'Not Authenticated',
-                error: err
-            });
-        }
-        next();
+    jwt.verify(req.query.token, 'secret', (err, decoded) => {
+        (err) ? (res.status(401).json({title: 'Not authenticated', error: err})) : next();
     })
 });
 
@@ -30,29 +24,15 @@ const searchPersonByType = (req, res, next) => {
     // Find user based on name
     userFunc.findOneUserName(req.params.name)
         .then(getListOutputsForUser)
-        .then(checkListOutputsForUser)
-        .then(listOfBooleans => {
-            var canDoTest = listOfBooleans.some(item => !item);
-            return res.status(200).json({
-                canDoTest: canDoTest
-            })
-        }).catch( error => {
-            return res.status(500).json({
-                title: 'An error occurred',
-                error: error
-            })
-        })
+        .then(txs => (checkListOutputsForUser(txs, req.params.type)))
+        .then(listOfBooleans => (res.status(200).json({canDoTest: listOfBooleans.some(item => !item)})))
+        .catch(error => (res.status(500).json({title: 'An error occurred', error: error})))
 }
 
-const getListOutputsForUser = (user) => {
-    // User public key of user to list all transactions connected to user
-    return conn.listOutputs(
-        new driver.Ed25519Keypair(bip39.mnemonicToSeed(user.password).slice(0, 32)).publicKey,
-        false
-    )
-}
+// User public key of user to list all transactions connected to user
+const getListOutputsForUser = (user) => (conn.listOutputs(new driver.Ed25519Keypair(bip39.mnemonicToSeed(user.password).slice(0, 32)).publicKey))
 
-const checkListOutputsForUser = (txs) => {
+const checkListOutputsForUser = (txs, type) => {
     // Get Transfer transaction for Id and further find the Create transaction for Id in res.asset
     // Next check if type is right and calculate difference in years between creation of asset and Date.now
     // Returned false if difference is lower than 5 years
@@ -61,15 +41,17 @@ const checkListOutputsForUser = (txs) => {
     // Add all promises to array to be executed later synchronous
     var promiseArray = txs.map(tx => {
         return conn.getTransaction(tx.transaction_id)
-            .then(res => conn.getTransaction(res.asset.id))
+            .then(res => (conn.getTransaction(res.asset.id)))
             .then(tx => {
-                if(tx.asset.data.testType == req.params.type) {
+                if(tx.asset.data.testType == type) {
                     return ((Date.now() - new Date(tx.asset.data.testDate).valueOf()) / ONE_YEAR >= 5)
-                } else {
-                    return true;
                 }
+                return true
             }) 
-    }) // OPTIONAL: Make code more performant by stopping here when you find one FALSE
+    }) 
+    // OPTIONAL: Make code more performant by stopping here when you find one FALSE
+    // However, this requires the use of 'break' which I tend not to use in my code.
+    // Plus: ES6 .map method doesn't have a way to break the loop
 
     // Wait untill all promises are executed
     return Promise.all(promiseArray)
@@ -85,19 +67,18 @@ router.get('/autoCompletePerson/:name', function(req, res, next) {
         .catch(error => (res.status(500).json({error: error})))
 });
 
-var signedTx;
-
 const searchUserById = (req, res, next) => {
     userFunc.findUserById(jwt.decode(req.query.token).user._id)
         .then(company => {
             return userFunc.findOneUserName(req.body.name)
-                .then((user) => {
+                .then(user => {
                     gCompany = new driver.Ed25519Keypair(bip39.mnemonicToSeed(company.password).slice(0, 32));
                     gTestperson = new driver.Ed25519Keypair(bip39.mnemonicToSeed(user.password).slice(0, 32));
 
-                    return createTransaction(company, user, req)
+                    return {'name': req.body.name, 'type': req.body.testType, 'date': req.body.date, 'remark': req.body.remark}
                 })
         })
+        .then(createTransaction)
         .then(signTransaction)
         .then(sendToBlockchain)
         .then(fetchStatusTx)
@@ -109,36 +90,28 @@ const searchUserById = (req, res, next) => {
         .catch(error => (res.status(500).json({'title': 'An error occurred', 'error': error})))
 }
 
-const createTransaction = (company, user, req) => {
+const createTransaction = (data) => {
     return driver.Transaction.makeCreateTransaction(
         {
-            'testPerson': req.body.name,
-            'testType': req.body.testType,
-            'testDate': req.body.date
+            'testPerson': data.name,
+            'testType': data.type,
+            'testDate': data.date
         },
-        {'testRemark': req.body.remark},
+        {'testRemark': data.remark},
         [driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(gCompany.publicKey))],
         gCompany.publicKey
     )
 }
 
-const signTransaction = (tx) => {
-     signedTx = driver.Transaction.signTransaction(tx, gCompany.privateKey)
-     return signedTx;
-}
+const signTransaction = (tx) => (driver.Transaction.signTransaction(tx, gCompany.privateKey))
 
-const sendToBlockchain = (tx) => {
-    return conn.postTransaction(tx)
-}
+const sendToBlockchain = (tx) => (conn.postTransaction(tx))
 
-const fetchStatusTx = (tx) => {
-    return conn.pollStatusAndFetchTransaction(tx.id);
-}
+const fetchStatusTx = (tx) => (conn.pollStatusAndFetchTransaction(tx.id))
 
 const prepareTransferTx = (txSigned) => {
-    console.log("testperson  pub key: " + gTestperson.publicKey)
     return driver.Transaction.makeTransferTransaction(
-        signedTx,
+        txSigned,
         {'metaDataMessage': 'Transfer test'},
         [driver.Transaction.makeOutput(driver.Transaction.makeEd25519Condition(gTestperson.publicKey))], 0)
 }
